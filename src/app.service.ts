@@ -2,13 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { controllerTemplate } from './templates/controller.template';
 import { moduleTemplate } from './templates/module.template';
 const fs = require('fs');
+const exec = require('child_process').exec
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
-  }
-
   createController(data: IData) {
     const fileName = `${data.name.toLowerCase()}.controller.ts`;
 
@@ -34,12 +31,23 @@ export class AppService {
     return { success: true };
   }
 
-  async generateProject(data) {
+  async generateFolder(data) {
     if(!fs.existsSync(data.name)) {
       fs.mkdirSync(`${data.name}`);
     }
 
+    
     await this.createModule(data);
     await this.createController(data);
+
+    exec(`move ${data.name} /src/${data.projectName}`);
   }
+
+  async createProject(data: IProject) {
+    exec(`mkdir ${data.projectName}`)
+    exec(`cd ${data.projectName} && nest new ${data.projectName} -p npm`);
+    exec(`cd ${data.projectName}`);
+    exec(`npm i`);
+    exec(`npm i @nestjs/typeorm @nestjs/passport`);
+  };
 }

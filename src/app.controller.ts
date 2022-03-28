@@ -5,13 +5,13 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('generate')
+  async generateFolder(@Body() data) {
+    return await this.appService.generateFolder(data);
   }
 
-  @Post()
-  async generateProject(@Body() data) {
-    return await this.appService.generateProject(data);
+  @Post('createProject')
+  async createProject(@Body() data) {
+    return await this.appService.createProject(data);
   }
 }
