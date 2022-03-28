@@ -39,8 +39,7 @@ export class AppService {
     
     await this.createModule(data);
     await this.createController(data);
-
-    exec(`move ${data.name} /src/${data.projectName}`);
+    exec(`move ${data.name} ${data.projectName}/src/`);
   }
 
   async createProject(data: IProject) {
