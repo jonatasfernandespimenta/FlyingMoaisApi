@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { join } from 'path';
 import { controllerTemplate } from './templates/controller.template';
 import { moduleTemplate } from './templates/module.template';
 const fs = require('fs');
@@ -27,6 +28,32 @@ export class AppService {
         console.log(err);
       }
     })
+
+    const mainModuleLocation = join(__dirname, '..', '..', data.projectName, data.projectName.toLowerCase(), 'src', 'app.module.ts');
+    let mainModule = fs.readFileSync(`${mainModuleLocation}`, 'utf8');
+
+    const imports = `import { ${data.name}Module } from './${data.name.toLowerCase()}.module.ts';`;
+    const importsArray = mainModule.split('\n').filter(line => line.includes('imports: ['));
+    const newModuleName = `${data.name}Module`;
+    
+    mainModule = imports + '\n' + mainModule
+
+    fs.writeFileSync(mainModuleLocation, mainModule);
+
+    if(importsArray.length === 0) {
+      const newImports = `imports: [
+        ${newModuleName}
+      ]`;
+      const newMainModule = mainModule.replace('imports: []', newImports);
+      fs.writeFileSync(mainModuleLocation, newMainModule);
+    } else {
+      const newImports = importsArray[0].replace(']', `,
+        ${newModuleName}
+      ]`);
+      const newMainModule = mainModule.replace(importsArray[0], newImports);
+      fs.writeFileSync(mainModuleLocation, newMainModule);
+    }
+
 
     return { success: true };
   }
