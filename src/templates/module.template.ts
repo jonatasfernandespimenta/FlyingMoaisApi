@@ -5,17 +5,13 @@ export function moduleTemplate(data: IData) {
     import { ${data.name}Controller } from './${data.name}.controller';
     import { TypeOrmModule } from '@nestjs/typeorm';
     import { ${data.name} } from './${data.name}.entity';
-    import { AuthModule } from '../auth/auth.module';
-    import { AuthService } from '../auth/auth.service';
     import { AuthGuard } from '@nestjs/passport';
     import { JwtModule } from '@nestjs/jwt';
     import { ConfigModule } from '@nestjs/config';
-    import { config } from '../config/config';
     
     @Module({
       imports: [
         TypeOrmModule.forFeature([${data.name}]),
-        AuthModule,
         ${
           data.usesJwt
             ? `JwtModule.register({
@@ -24,9 +20,6 @@ export function moduleTemplate(data: IData) {
         })`
             : ''
         },
-        ConfigModule.forRoot({
-          load: [config],
-        }),
       ],
       providers: [${data.name}Service],
       controllers: [${data.name}Controller],
