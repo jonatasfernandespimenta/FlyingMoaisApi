@@ -7,28 +7,7 @@ const exec = require('child_process').exec
 
 @Injectable()
 export class AppService {
-  createController(data: IData) {
-    const fileName = `${data.name.toLowerCase()}.controller.ts`;
-
-    data.controllers.forEach((controller: IController) => {
-      fs.writeFile(`./${data.name}/${fileName}`, controllerTemplate(controller), (err) => {
-        if (err) {
-          console.log(err);
-        }
-      })
-
-      return { success: true };
-    })
-  }
-
-  createModule(data: IData) {
-    const fileName = `${data.name.toLowerCase()}.module.ts`;
-    fs.writeFile(`./${data.name}/${fileName}`, moduleTemplate(data), (err) => {
-      if (err) {
-        console.log(err);
-      }
-    })
-
+  importNewModule(data: IData) {
     const mainModuleLocation = join(__dirname, '..', '..', data.projectName, data.projectName.toLowerCase(), 'src', 'app.module.ts');
     let mainModule = fs.readFileSync(`${mainModuleLocation}`, 'utf8');
 
@@ -53,8 +32,29 @@ export class AppService {
       const newMainModule = mainModule.replace(importsArray[0], newImports);
       fs.writeFileSync(mainModuleLocation, newMainModule);
     }
+  }
 
+  createController(data: IData) {
+    const fileName = `${data.name.toLowerCase()}.controller.ts`;
 
+    data.controllers.forEach((controller: IController) => {
+      fs.writeFile(`./${data.name}/${fileName}`, controllerTemplate(controller), (err) => {
+        if (err) {
+          console.log(err);
+        }
+      })
+
+      return { success: true };
+    })
+  }
+
+  createModule(data: IData) {
+    const fileName = `${data.name.toLowerCase()}.module.ts`;
+    fs.writeFile(`./${data.name}/${fileName}`, moduleTemplate(data), (err) => {
+      if (err) {
+        console.log(err);
+      }
+    })
     return { success: true };
   }
 
@@ -67,9 +67,10 @@ export class AppService {
     
     await this.createController(data);
     await this.createModule(data);
+    await this.importNewModule(data);
   }
 
-  async createProject(data: IProject) {
+  async createNestProject(data: IProject) {
     exec(`mkdir ${data.projectName}`)
     exec(`cd ${data.projectName} && nest new ${data.projectName} -p npm`);
     exec(`cd ${data.projectName}`);
