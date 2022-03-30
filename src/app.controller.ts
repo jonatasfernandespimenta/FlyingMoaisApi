@@ -12,6 +12,6 @@ export class AppController {
 
   @Post('createProject')
   async createProject(@Body() data) {
-    return await this.appService.createProject(data);
+    return await this.appService.createNestProject(data);
   }
 }

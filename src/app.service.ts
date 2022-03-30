@@ -70,7 +70,7 @@ export class AppService {
     await this.importNewModule(data);
   }
 
-  async createProject(data: IProject) {
+  async createNestProject(data: IProject) {
     exec(`mkdir ${data.projectName}`)
     exec(`cd ${data.projectName} && nest new ${data.projectName} -p npm`);
     exec(`cd ${data.projectName}`);
