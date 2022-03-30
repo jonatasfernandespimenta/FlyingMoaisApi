@@ -32,7 +32,7 @@ export class AppService {
     const mainModuleLocation = join(__dirname, '..', '..', data.projectName, data.projectName.toLowerCase(), 'src', 'app.module.ts');
     let mainModule = fs.readFileSync(`${mainModuleLocation}`, 'utf8');
 
-    const imports = `import { ${data.name}Module } from './${data.name.toLowerCase()}.module.ts';`;
+    const imports = `import { ${data.name}Module } from './${data.name}/${data.name.toLowerCase()}.module';`;
     const importsArray = mainModule.split('\n').filter(line => line.includes('imports: ['));
     const newModuleName = `${data.name}Module`;
     
@@ -63,10 +63,10 @@ export class AppService {
       fs.mkdirSync(`${data.name}`);
     }
 
+    exec(`move ${data.name} ${data.projectName}/${data.projectName.toLowerCase()}/src/`);
     
-    await this.createModule(data);
     await this.createController(data);
-    exec(`move ${data.name} ${data.projectName}/src/`);
+    await this.createModule(data);
   }
 
   async createProject(data: IProject) {
